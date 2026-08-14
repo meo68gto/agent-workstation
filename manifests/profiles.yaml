@@ -1,0 +1,98 @@
+# Agent Workstation — Profile definitions
+schema_version: 1
+
+profiles:
+  minimal:
+    description: Enough to inspect the host, validate manifests, diagnose, and run bootstrap safely.
+    required: [python, git, jq]
+    recommended: [uv, shellcheck]
+    environment_dependent: []
+
+  core:
+    description: Recommended baseline for a general AI cloud workstation.
+    required:
+      - python
+      - uv
+      - node
+      - pnpm
+      - git
+      - gh
+      - ripgrep
+      - fd
+      - bat
+      - jq
+      - yq
+      - tmux
+      - fzf
+      - delta
+      - direnv
+      - just
+      - rsync
+    recommended:
+      - shellcheck
+      - shfmt
+      - eza
+      - zoxide
+      - age
+    environment_dependent: []
+
+  developer:
+    description: Programming toolchains, repository quality tools, CI-related tools.
+    extends: core
+    required:
+      - go
+      - rust
+      - pre-commit
+      - shellcheck
+      - shfmt
+      - act
+    recommended: []
+    environment_dependent: [act]
+
+  browser:
+    description: Playwright + browser tooling + yt-dlp.
+    extends: core
+    required: [playwright, yt-dlp]
+    recommended: []
+    environment_dependent: [playwright]
+
+  data:
+    description: JupyterLab, DuckDB, SQLite, pandas, Miller.
+    extends: core
+    required: [jupyterlab, duckdb, sqlite, pandas, miller]
+    recommended: []
+    environment_dependent: []
+
+  automation:
+    description: Docker + n8n service management.
+    extends: core
+    required: [docker, n8n]
+    recommended: []
+    environment_dependent: [docker, n8n]
+
+  media:
+    description: Media and document tooling.
+    extends: core
+    required: [ffmpeg, imagemagick, tesseract, poppler, pandoc]
+    recommended: []
+    environment_dependent: []
+
+  backup:
+    description: Backup and restore tooling.
+    extends: core
+    required: [rsync, rclone, restic]
+    recommended: [age, sops]
+    environment_dependent: []
+
+  security:
+    description: Encryption and secret handling.
+    extends: core
+    required: [age, sops]
+    recommended: []
+    environment_dependent: []
+
+  all:
+    description: Union of all 50 primary capabilities.
+    required: []  # resolved dynamically as the full set
+    recommended: []
+    environment_dependent: [act, docker, n8n, playwright]
