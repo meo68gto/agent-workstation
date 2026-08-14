@@ -1,0 +1,31 @@
+# Grok Bot / Grok cloud defaults
+platform: grok-cloud
+description: Managed Linux cloud computer used by Grok Bot (member-scoped shared VM)
+
+state:
+  preferred_root: /workspace/.agent-workstation
+  fallback_warning: true
+  persistence_confidence_when_preferred: high
+  persistence_confidence_when_xdg: low
+
+user:
+  expect_non_root: true
+  never_configure_root_as_workstation_user: true
+
+security:
+  never_add_to_docker_group: true
+  never_regenerate_n8n_encryption_key_if_state_present: true
+  never_wipe_authenticated_browser_profiles: true
+  bind_services_to_loopback: true
+
+agent:
+  support_agent_id: true
+  multi_bot_coordination: true
+  shared_uid_warning: "Multiple Bots share the same Unix user and can read each other's accessible files."
+
+capabilities:
+  environment_dependent:
+    - docker
+    - n8n
+    - act
+    - playwright   # sandbox / display behavior can vary
