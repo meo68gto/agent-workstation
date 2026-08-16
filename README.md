@@ -57,6 +57,7 @@ For the full catalog (50 primary capabilities):
 - `backup` — rsync, rclone, restic
 - `security` — age + SOPS
 - `all` — full 50-capability catalog
+- `agent-stack` — second catalog (LangGraph, Pydantic AI, Mem0, browser-use, CrewAI; Langfuse/Firecrawl/Mastra are environment-dependent)
 
 ## Architecture highlights
 
@@ -84,6 +85,8 @@ verify the required capabilities, and then continue my original task.
 - [platforms/grok-cloud/README.md](platforms/grok-cloud/README.md) — Grok Bot adapter
 - [platforms/grok-cloud/recovery.md](platforms/grok-cloud/recovery.md) — rebuild recovery
 - [STATUS.md](STATUS.md) — current completion label
+- [prompts/productionize-agent-stack.md](prompts/productionize-agent-stack.md) — hardcoded Grok Bot productionize outline
+- [docs/AGENT-STACK.md](docs/AGENT-STACK.md) — audit, coexistence, phases
 
 ## License
 

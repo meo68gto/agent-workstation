@@ -44,6 +44,26 @@ class VerifyTests(unittest.TestCase):
         result = verify_tool(tool)
         self.assertEqual(result.status, "passed")
 
+    def test_http_contains_rejects_wrong_service(self) -> None:
+        from workstation.verify import run_http
+
+        class FakeResp:
+            status = 200
+
+            def read(self, _n: int) -> bytes:
+                return b"<html>next app</html>"
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return False
+
+        with mock.patch("workstation.verify.urlopen", return_value=FakeResp()):
+            info = run_http("http://127.0.0.1:3000/api/public/health", contains="status")
+        self.assertFalse(info["ok"])
+        self.assertIn("did not contain", info["reason"])
+
     def test_http_only_is_not_configured(self) -> None:
         tool = {
             "id": "n8n",

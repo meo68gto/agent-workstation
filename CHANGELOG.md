@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0-dev] - 2026-08-16
+
+### Added
+- Hardcoded Grok Bot productionize outline (`prompts/productionize-agent-stack.md`)
+- Second catalog `manifests/agent-stack.yaml` (8 frameworks/services)
+- `agent-stack` profile, skill, docs, MCP examples, validation script
+- `uv-pip` adapter for isolated agent-stack venv
+- AGENTS.md hierarchy: Firecrawl → browser-use → Playwright → computer-use
+
 ## [0.1.0-dev] - 2026-08-15
 
 ### Added

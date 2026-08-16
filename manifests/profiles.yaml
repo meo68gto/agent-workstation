@@ -96,3 +96,15 @@ profiles:
     required: []  # resolved dynamically as the full set
     recommended: []
     environment_dependent: [act, docker, n8n, playwright]
+
+  agent-stack:
+    description: Agent frameworks and self-hosted services. Second catalog — not part of the 50 CLI tools.
+    catalog: agent-stack
+    required:
+      - pydantic-ai
+      - langgraph
+      - mem0
+      - browser-use
+      - crewai
+    recommended: []
+    environment_dependent: [langfuse, firecrawl, mastra]

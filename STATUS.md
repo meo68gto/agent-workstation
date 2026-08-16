@@ -22,6 +22,16 @@ chmod +x doctor.sh bootstrap.sh repair.sh
 ./bootstrap.sh --profile core
 ```
 
+## Agent stack (2026-08-16)
+
+The productionize prompt is hardcoded. It is **not** installed on a Grok Bot yet.
+
+- Outline: `prompts/productionize-agent-stack.md`
+- Catalog: `manifests/agent-stack.yaml` (8 tools, separate from the 50)
+- Profile: `./doctor.sh --profile agent-stack`
+- Python-lib adapter: `uv-pip` into `<state-root>/venvs/agent-stack`
+- Langfuse/Firecrawl remain Docker-gated; Firecrawl is AGPL and must stay out of this tree
+
 ## Remaining
 
 - Adapters for `uv-tool`, `pnpm` (Playwright), and `docker-compose` (n8n)
