@@ -4,12 +4,13 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from typing import Any
 
 from .aliases import apply_aliases, plan_aliases
-from .catalog import load_debian_map, load_tools, resolve_profile
+from .catalog import load_debian_map, load_tools_for_profile, resolve_profile
 from .context import (
     dry_run,
     ensure_process_path,
@@ -202,13 +203,18 @@ def main() -> int:
     log("INFO", f"Profile={profile_name()}  tool={tool_filter() or '(none)'}  dry_run={dry_run()}")
 
     try:
-        tools = load_tools()
-        profile = resolve_profile(profile_name(), tools=tools)
+        profile = resolve_profile(profile_name())
+        tools = load_tools_for_profile(profile)
     except Exception as exc:
         log("ERROR", str(exc))
         return 2
 
-    log("INFO", f"Loaded {len(tools)} primary capabilities; profile requires {len(profile['required'])}")
+    if profile.get("catalog") == "agent-stack":
+        venv_py = ctx.state_root() / "venvs" / "agent-stack" / "bin" / "python"
+        if venv_py.exists():
+            os.environ["AGENT_WORKSTATION_PYTHON"] = str(venv_py)
+
+    log("INFO", f"Loaded {len(tools)} capabilities from {profile.get('catalog', 'primary')}; profile requires {len(profile['required'])}")
 
     if op == "doctor":
         report = run_doctor(tools, profile)

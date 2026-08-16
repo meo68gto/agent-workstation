@@ -1,5 +1,6 @@
 # Agent Workstation — Canonical Capability Catalog
-# Exactly 50 primary capabilities. Numbers 1–50 must be unique and sequential.
+# Primary CLI/service catalog. Numbers must be unique and sequential from 1.
+# Count is not a hard cap — add a tool when a real gap exists.
 # This file is the single source of truth for capability identity and contracts.
 schema_version: 1
 
@@ -705,3 +706,17 @@ tools:
     install: {preferred_strategy: official_release, requires_sudo: false}
     persistence: {classification: recreateable}
     verify: [{id: version, type: exec, argv: [sops, --version]}]
+
+  - number: 51
+    id: libreoffice
+    name: LibreOffice (headless)
+    kind: document-converter
+    category: media-documents
+    canonical: {project_name: LibreOffice, homepage: "https://www.libreoffice.org/", repository: "https://git.libreoffice.org/core"}
+    license: {expression: MPL-2.0, classification: osi_open_source}
+    support: {operating_systems: [linux], architectures: [amd64, arm64], debian_13: supported}
+    commands: {primary: [soffice], alternatives: [libreoffice]}
+    depends_on: []
+    install: {preferred_strategy: apt, requires_sudo: true}
+    persistence: {classification: recreateable}
+    verify: [{id: version, type: exec, argv: [soffice, --version]}]

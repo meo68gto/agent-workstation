@@ -13,9 +13,6 @@ except ImportError:  # pragma: no cover
 from .context import log, repo_root
 
 
-EXPECTED_TOOL_COUNT = 50
-
-
 def _load_yaml(path: Path) -> dict[str, Any]:
     if yaml is None:
         raise RuntimeError("PyYAML is required")
@@ -29,14 +26,14 @@ def _load_yaml(path: Path) -> dict[str, Any]:
 def load_tools(root: Path | None = None) -> list[dict[str, Any]]:
     path = (root or repo_root()) / "manifests" / "tools.yaml"
     tools = _load_yaml(path).get("tools", [])
-    if len(tools) != EXPECTED_TOOL_COUNT:
-        raise ValueError(f"Expected exactly {EXPECTED_TOOL_COUNT} tools, found {len(tools)}")
+    if not tools:
+        raise ValueError("tools.yaml contains no tools")
     ids = [t.get("id") for t in tools]
     if len(set(ids)) != len(ids):
         raise ValueError("Duplicate tool ids in tools.yaml")
     numbers = [t.get("number") for t in tools]
-    if numbers != list(range(1, EXPECTED_TOOL_COUNT + 1)):
-        raise ValueError("Tool numbers must be unique and sequential 1–50")
+    if numbers != list(range(1, len(tools) + 1)):
+        raise ValueError("Tool numbers must be unique and sequential starting at 1")
     return tools
 
 
@@ -60,6 +57,7 @@ def resolve_profile(
         return {
             "name": "all",
             "description": profiles.get("all", {}).get("description", ""),
+            "catalog": "primary",
             "required": [t["id"] for t in catalog],
             "recommended": list(profiles.get("all", {}).get("recommended", [])),
             "environment_dependent": list(profiles.get("all", {}).get("environment_dependent", [])),
@@ -96,10 +94,29 @@ def resolve_profile(
     return {
         "name": name,
         "description": profiles[name].get("description", ""),
+        "catalog": profiles[name].get("catalog", "primary"),
         "required": required,
         "recommended": recommended,
         "environment_dependent": env_dep,
     }
+
+
+def load_stack_tools(root: Path | None = None) -> list[dict[str, Any]]:
+    path = (root or repo_root()) / "manifests" / "agent-stack.yaml"
+    data = _load_yaml(path)
+    tools = data.get("tools", [])
+    ids = [t.get("id") for t in tools]
+    if len(ids) != 8:
+        raise ValueError(f"Expected 8 agent-stack tools, found {len(ids)}")
+    if len(set(ids)) != len(ids):
+        raise ValueError("Duplicate ids in agent-stack.yaml")
+    return tools
+
+
+def load_tools_for_profile(profile: dict[str, Any], root: Path | None = None) -> list[dict[str, Any]]:
+    if profile.get("catalog") == "agent-stack":
+        return load_stack_tools(root)
+    return load_tools(root)
 
 
 def load_debian_map(root: Path | None = None) -> dict[str, Any]:

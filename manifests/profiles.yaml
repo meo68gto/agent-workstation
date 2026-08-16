@@ -71,9 +71,9 @@ profiles:
     environment_dependent: [docker, n8n]
 
   media:
-    description: Media and document tooling.
+    description: Media and document tooling, including headless LibreOffice for Office conversions.
     extends: core
-    required: [ffmpeg, imagemagick, tesseract, poppler, pandoc]
+    required: [ffmpeg, imagemagick, tesseract, poppler, pandoc, libreoffice]
     recommended: []
     environment_dependent: []
 
@@ -92,7 +92,19 @@ profiles:
     environment_dependent: []
 
   all:
-    description: Union of all 50 primary capabilities.
+    description: Union of all primary CLI/service capabilities.
     required: []  # resolved dynamically as the full set
     recommended: []
     environment_dependent: [act, docker, n8n, playwright]
+
+  agent-stack:
+    description: Agent frameworks and self-hosted services. Second catalog — not CLI/apt packages.
+    catalog: agent-stack
+    required:
+      - pydantic-ai
+      - langgraph
+      - mem0
+      - browser-use
+      - crewai
+    recommended: []
+    environment_dependent: [langfuse, firecrawl, mastra]

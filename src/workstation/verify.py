@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -71,16 +72,29 @@ def run_exec(argv: list[str], timeout: int = 15) -> dict[str, Any]:
 
 
 def run_python(code: str, timeout: int = 15) -> dict[str, Any]:
-    return run_exec([sys.executable, "-c", code], timeout=timeout)
+    exe = os.environ.get("AGENT_WORKSTATION_PYTHON") or sys.executable
+    return run_exec([exe, "-c", code], timeout=timeout)
 
 
-def run_http(url: str, timeout: int = 5) -> dict[str, Any]:
+def run_http(url: str, timeout: int = 5, contains: str | None = None) -> dict[str, Any]:
     try:
         with urlopen(url, timeout=timeout) as resp:  # noqa: S310 — catalog-controlled health URLs
             status = getattr(resp, "status", 0)
-            if 200 <= int(status) < 300:
-                return {"ok": True, "reason": f"HTTP {status}", "output": str(status), "path": url}
-            return {"ok": False, "reason": f"HTTP {status}", "output": str(status), "path": url}
+            body = ""
+            try:
+                body = resp.read(2000).decode("utf-8", errors="replace")
+            except Exception:
+                body = ""
+            if not (200 <= int(status) < 300):
+                return {"ok": False, "reason": f"HTTP {status}", "output": body[:160], "path": url}
+            if contains and contains.lower() not in body.lower():
+                return {
+                    "ok": False,
+                    "reason": f"HTTP {status} but body did not contain {contains!r} (wrong service on this port?)",
+                    "output": body[:160],
+                    "path": url,
+                }
+            return {"ok": True, "reason": f"HTTP {status}", "output": body[:160] or str(status), "path": url}
     except URLError as exc:
         return {"ok": False, "reason": f"HTTP unreachable: {exc.reason}", "output": "", "path": url}
     except Exception as exc:
@@ -123,7 +137,7 @@ def verify_tool(tool: dict[str, Any]) -> VerifyResult:
             http_only_failures = False
         elif step_type == "http":
             saw_http = True
-            info = run_http(str(step.get("url") or ""))
+            info = run_http(str(step.get("url") or ""), contains=step.get("contains"))
         else:
             saw_other = True
             http_only_failures = False

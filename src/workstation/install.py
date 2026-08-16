@@ -8,6 +8,7 @@ import platform
 import shutil
 import stat
 import subprocess
+import sys
 import tarfile
 import tempfile
 import urllib.request
@@ -31,7 +32,7 @@ from .context import (
 )
 
 
-SUPPORTED_STRATEGIES = {"apt", "official_release", "official_apt_repository"}
+SUPPORTED_STRATEGIES = {"apt", "official_release", "official_apt_repository", "uv-pip"}
 
 
 class InstallError(RuntimeError):
@@ -334,6 +335,57 @@ def install_official_apt_repo(tool: dict[str, Any], lock: dict[str, Any], dry: b
     return install_apt_packages(packages, dry=False)
 
 
+def stack_venv_python() -> Path:
+    return state_root() / "venvs" / "agent-stack" / "bin" / "python"
+
+
+def ensure_stack_venv() -> Path:
+    py = stack_venv_python()
+    if py.exists():
+        return py
+    venv = py.parent.parent
+    venv.parent.mkdir(parents=True, exist_ok=True)
+    uv = shutil.which("uv")
+    if uv:
+        created = _run([uv, "venv", str(venv)])
+        if created.returncode != 0:
+            raise InstallError(f"uv venv failed: {(created.stderr or '')[-300:]}")
+    else:
+        created = _run([sys.executable, "-m", "venv", str(venv)])
+        if created.returncode != 0:
+            raise InstallError(f"python -m venv failed: {(created.stderr or '')[-300:]}")
+    if not py.exists():
+        raise InstallError(f"venv python missing after create: {py}")
+    return py
+
+
+def install_uv_pip(tool: dict[str, Any], dry: bool) -> dict[str, Any]:
+    package = (tool.get("install") or {}).get("package") or tool["id"]
+    if dry:
+        return {
+            "status": "planned",
+            "strategy": "uv-pip",
+            "reason": f"would uv-pip install {package} into agent-stack venv",
+            "package": package,
+        }
+    py = ensure_stack_venv()
+    uv = shutil.which("uv")
+    if uv:
+        cmd = [uv, "pip", "install", "--python", str(py), package]
+    else:
+        cmd = [str(py), "-m", "pip", "install", package]
+    result = _run(cmd)
+    if result.returncode != 0:
+        raise InstallError(f"install {package} failed: {(result.stderr or result.stdout or '')[-400:]}")
+    return {
+        "status": "installed",
+        "strategy": "uv-pip",
+        "reason": f"installed {package} into {py.parent.parent}",
+        "package": package,
+        "path": str(py),
+    }
+
+
 def install_one(
     tool: dict[str, Any],
     lock: dict[str, Any],
@@ -353,6 +405,8 @@ def install_one(
             result = install_apt_packages(apt_packages_for(tool, debian_map), dry)
         elif strategy == "official_apt_repository":
             result = install_official_apt_repo(tool, lock, dry)
+        elif strategy == "uv-pip":
+            result = install_uv_pip(tool, dry)
         else:
             result = install_official_release(tool, lock, dry)
         result["id"] = tool["id"]

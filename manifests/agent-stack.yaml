@@ -1,0 +1,193 @@
+# Agent stack — second catalog (frameworks/services, not CLI/apt packages).
+# Source of truth for the productionize outline in prompts/productionize-agent-stack.md.
+# Researched 2026-08-16 against GitHub. Re-verify before bumping pins.
+schema_version: 1
+stack_id: agent-stack
+audited: 2026-08-16
+python_venv: "<state-root>/venvs/agent-stack"
+bind: 127.0.0.1
+
+coexistence:
+  memory: workstation XDG/state is operational (locks, reports, journals). Mem0 is long-term facts. Do not replace one with the other.
+  web: official connector > API/CLI > Firecrawl (structured extract) > browser-use (interactive UI) > Playwright > computer-use.
+  orchestration: LangGraph is the default durable engine. CrewAI is for named role crews. Mastra is the TypeScript parallel, not a second Python orchestrator.
+  observability: Langfuse when Docker is available. Otherwise write local JSON spans under <state-root>/traces. Never claim traces exist without a file or Langfuse id.
+
+phases:
+  - id: contract
+    status: in_repo
+    summary: Hardcode outline, manifest, skill, AGENTS hierarchy.
+  - id: python-libs
+    status: next
+    summary: Isolated venv with pydantic-ai, langgraph, mem0, browser-use, crewai.
+    tools: [pydantic-ai, langgraph, mem0, browser-use, crewai]
+  - id: observability
+    status: docker-gated
+    summary: Self-host Langfuse on loopback. Instrument stack runs. JSON-span fallback first.
+    tools: [langfuse]
+  - id: firecrawl
+    status: docker-gated
+    summary: Self-host Firecrawl only after AGPL acknowledgement. Loopback only.
+    tools: [firecrawl]
+  - id: mastra
+    status: later
+    summary: TypeScript workspace for Mastra when Node/pnpm core is ready.
+    tools: [mastra]
+  - id: validate
+    status: later
+    summary: Run scripts/validate-agent-stack.py and publish a capabilities summary.
+
+tools:
+  - id: langfuse
+    number: 1
+    name: Langfuse
+    kind: observability-service
+    repo: https://github.com/langfuse/langfuse
+    license: {expression: MIT, classification: osi_open_source, notes: "Core MIT. ee/ features need a commercial key; do not enable."}
+    github: {stars: 33155, audited: 2026-08-16}
+    languages: [typescript, python]
+    mcp: {available: false, notes: "Use official SDKs. No first-party MCP required for tracing."}
+    install:
+      preferred_strategy: docker-compose
+      requires_sudo: true
+      requires_docker: true
+      compose: platforms/grok-cloud/compose/langfuse.example.yaml
+    persistence: {classification: critical, contains_secrets: true}
+    verify:
+      - {id: health, type: http, url: "http://127.0.0.1:3100/api/public/health", contains: status}
+    bot_fit: environment_dependent
+    default_for: [trace-every-run, prompt-management, evals]
+
+  - id: pydantic-ai
+    number: 2
+    name: Pydantic AI
+    kind: python-library
+    repo: https://github.com/pydantic/pydantic-ai
+    license: {expression: MIT, classification: osi_open_source}
+    github: {stars: 19318, audited: 2026-08-16}
+    languages: [python]
+    mcp: {available: true, notes: "Native MCP client/server support in the library."}
+    install:
+      preferred_strategy: uv-pip
+      requires_sudo: false
+      package: pydantic-ai
+    persistence: {classification: recreateable}
+    verify:
+      - {id: import, type: python, code: "import pydantic_ai; print(getattr(pydantic_ai, '__version__', 'ok'))"}
+    bot_fit: first_class
+    default_for: [typed-report, typed-triage, structured-extract]
+
+  - id: langgraph
+    number: 3
+    name: LangGraph
+    kind: python-library
+    repo: https://github.com/langchain-ai/langgraph
+    license: {expression: MIT, classification: osi_open_source}
+    github: {stars: 39753, audited: 2026-08-16}
+    languages: [python]
+    mcp: {available: false, notes: "Library/runtime. Checkpoint to local sqlite under state-root."}
+    install:
+      preferred_strategy: uv-pip
+      requires_sudo: false
+      package: langgraph
+    persistence: {classification: recreateable}
+    verify:
+      - {id: import, type: python, code: "import langgraph; print('ok')"}
+    bot_fit: first_class
+    default_for: [durable-pipeline, checkpoint, human-in-the-loop]
+
+  - id: mem0
+    number: 4
+    name: Mem0
+    kind: python-library
+    repo: https://github.com/mem0ai/mem0
+    license: {expression: Apache-2.0, classification: osi_open_source}
+    github: {stars: 63332, audited: 2026-08-16}
+    languages: [python]
+    mcp: {available: true, notes: "mem0ai/mem0-mcp and OpenMemory. Prefer local/OpenMemory over hosted Mem0 Cloud."}
+    install:
+      preferred_strategy: uv-pip
+      requires_sudo: false
+      package: mem0ai
+    persistence: {classification: critical, contains_secrets: false}
+    verify:
+      - {id: import, type: python, code: "import mem0; print(getattr(mem0, '__version__', 'ok'))"}
+    bot_fit: first_class
+    default_for: [long-term-memory, multi-scope-facts, cross-bot-share]
+
+  - id: browser-use
+    number: 5
+    name: browser-use
+    kind: python-library
+    repo: https://github.com/browser-use/browser-use
+    license: {expression: MIT, classification: osi_open_source}
+    github: {stars: 109349, audited: 2026-08-16}
+    languages: [python]
+    mcp: {available: true, notes: "Official package registers in the MCP registry (com.browser-use/browser-use). Also `browser-use skill install`."}
+    install:
+      preferred_strategy: uv-pip
+      requires_sudo: false
+      package: browser-use
+    persistence: {classification: recreateable}
+    verify:
+      - {id: import, type: python, code: "import browser_use; print(getattr(browser_use, '__version__', 'ok'))"}
+    bot_fit: first_class
+    default_for: [complex-web-ui, form-fill, site-without-api]
+
+  - id: crewai
+    number: 6
+    name: CrewAI
+    kind: python-library
+    repo: https://github.com/crewAIInc/crewAI
+    license: {expression: MIT, classification: osi_open_source}
+    github: {stars: 57127, audited: 2026-08-16}
+    languages: [python]
+    mcp: {available: true, notes: "MCPServerAdapter. Use after LangGraph default is in place."}
+    install:
+      preferred_strategy: uv-pip
+      requires_sudo: false
+      package: crewai
+    persistence: {classification: recreateable}
+    verify:
+      - {id: import, type: python, code: "import crewai; print(getattr(crewai, '__version__', 'ok'))"}
+    bot_fit: first_class
+    default_for: [report-crew, triage-crew, test-crew]
+
+  - id: firecrawl
+    number: 7
+    name: Firecrawl
+    kind: persistent-service
+    repo: https://github.com/firecrawl/firecrawl
+    license: {expression: AGPL-3.0-only, classification: copyleft, notes: "Self-host only. Do not vendor Firecrawl source into this MIT repo. Hosted Cloud is a different product."}
+    github: {stars: 167810, audited: 2026-08-16}
+    languages: [typescript]
+    mcp: {available: true, notes: "Official local MCP can point at a self-hosted API."}
+    install:
+      preferred_strategy: docker-compose
+      requires_sudo: true
+      requires_docker: true
+      agpl_ack_required: true
+    persistence: {classification: recreateable}
+    verify:
+      - {id: health, type: http, url: "http://127.0.0.1:3002/v0/health"}
+    bot_fit: environment_dependent
+    default_for: [structured-web-extract, crawl, rag-feed]
+
+  - id: mastra
+    number: 8
+    name: Mastra
+    kind: typescript-framework
+    repo: https://github.com/mastra-ai/mastra
+    license: {expression: Apache-2.0, classification: osi_open_source, notes: "Core Apache-2.0. Do not enable packages under ee/ without an enterprise license."}
+    github: {stars: 27216, audited: 2026-08-16}
+    languages: [typescript]
+    mcp: {available: true, notes: "First-class MCP server authoring."}
+    install:
+      preferred_strategy: pnpm
+      requires_sudo: false
+      package: mastra
+    persistence: {classification: recreateable}
+    verify:
+      - {id: version, type: exec, argv: [pnpm, exec, mastra, --version]}
+    bot_fit: environment_dependent
+    default_for: [typescript-workflows, ts-mcp-servers]

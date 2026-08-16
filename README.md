@@ -13,7 +13,7 @@ cd agent-workstation
 ./doctor.sh --profile core
 ```
 
-For the full catalog (50 primary capabilities):
+For the full primary catalog:
 
 ```bash
 ./bootstrap.sh --profile all
@@ -56,12 +56,13 @@ For the full catalog (50 primary capabilities):
 - `media` — FFmpeg, ImageMagick, Tesseract, Poppler, Pandoc
 - `backup` — rsync, rclone, restic
 - `security` — age + SOPS
-- `all` — full 50-capability catalog
+- `all` — full primary CLI/service catalog
+- `agent-stack` — second catalog (LangGraph, Pydantic AI, Mem0, browser-use, CrewAI; Langfuse/Firecrawl/Mastra are environment-dependent)
 
 ## Architecture highlights
 
 - **Stage-zero** pure Bash entrypoint → Python orchestrator
-- Canonical `manifests/tools.yaml` (exactly 50 primary capabilities)
+- Canonical `manifests/tools.yaml` (sequential primary capabilities; count is not a cap)
 - Debian package map (`manifests/debian.yaml`) plus PATH aliases (`fdfind`→`fd`, `batcat`→`bat`)
 - Pinned source lock (`locks/sources.lock.yaml`) for official releases
 - Install adapters: `apt`, `official_release`, `official_apt_repository`
@@ -84,6 +85,8 @@ verify the required capabilities, and then continue my original task.
 - [platforms/grok-cloud/README.md](platforms/grok-cloud/README.md) — Grok Bot adapter
 - [platforms/grok-cloud/recovery.md](platforms/grok-cloud/recovery.md) — rebuild recovery
 - [STATUS.md](STATUS.md) — current completion label
+- [prompts/productionize-agent-stack.md](prompts/productionize-agent-stack.md) — hardcoded Grok Bot productionize outline
+- [docs/AGENT-STACK.md](docs/AGENT-STACK.md) — audit, coexistence, phases
 
 ## License
 

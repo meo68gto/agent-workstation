@@ -24,14 +24,24 @@ Prefer in this order:
 
 1. Official connector or platform integration
 2. Authenticated API or purpose-built CLI
-3. Playwright / browser automation
-4. Computer-use / GUI automation
+3. Firecrawl (self-hosted) for structured web extract / markdown / JSON
+4. browser-use for complex, self-healing web UI
+5. Playwright / browser automation
+6. Computer-use / GUI automation
 
 Examples:
 - GitHub connector or `gh` before browser clicking
-- Gmail connector before browser clicking
+- Gmail connector or `gh`/`IMAP` before browser clicking
 - Drive connector before browser clicking
-- Service API before screen scraping
+- Service API before Firecrawl
+- Firecrawl before browser-use when the job is extract-only
+- browser-use before computer-use when the job is a multi-step form or test
+
+Long-term facts go to Mem0. Workstation state (`/workspace/.agent-workstation`) stays operational (locks, doctor reports, journals). Do not replace one with the other.
+
+Durable multi-step jobs default to LangGraph. Named role crews use CrewAI. TypeScript work may use Mastra. Typed schemas use Pydantic AI.
+
+The productionize outline is hardcoded at [prompts/productionize-agent-stack.md](prompts/productionize-agent-stack.md). Follow [docs/AGENT-STACK.md](docs/AGENT-STACK.md) and [skills/agent-stack/SKILL.md](skills/agent-stack/SKILL.md). Do not add those eight tools to `manifests/tools.yaml`; they belong in the agent-stack catalog.
 
 ## Mandatory safety rules
 
@@ -72,6 +82,11 @@ Examples:
 # Individual tool
 ./bootstrap.sh --tool playwright
 ./doctor.sh --tool playwright
+
+# Agent frameworks (second catalog)
+./doctor.sh --profile agent-stack
+./bootstrap.sh --profile agent-stack
+python3 scripts/validate-agent-stack.py
 ```
 
 After the doctor reports the required capabilities as ready, **continue the user’s original task**.

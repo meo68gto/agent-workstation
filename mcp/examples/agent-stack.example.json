@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "browser-use": {
+      "command": "uv",
+      "args": ["run", "--directory", "/workspace/.agent-workstation/venvs/agent-stack", "browser-use"],
+      "description": "Official browser-use MCP (com.browser-use/browser-use). Confirm current CLI entrypoint before enabling."
+    },
+    "mem0-openmemory": {
+      "command": "uvx",
+      "args": ["mem0-mcp"],
+      "description": "Local Mem0 MCP. Prefer OpenMemory/self-host over Mem0 Cloud."
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_URL": "http://127.0.0.1:3002"
+      },
+      "description": "Point at a self-hosted Firecrawl. Do not enable until AGPL ack + compose is up."
+    }
+  }
+}
