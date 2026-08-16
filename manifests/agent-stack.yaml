@@ -1,4 +1,4 @@
-# Agent stack — second catalog (NOT part of the 50 CLI capabilities).
+# Agent stack — second catalog (frameworks/services, not CLI/apt packages).
 # Source of truth for the productionize outline in prompts/productionize-agent-stack.md.
 # Researched 2026-08-16 against GitHub. Re-verify before bumping pins.
 schema_version: 1

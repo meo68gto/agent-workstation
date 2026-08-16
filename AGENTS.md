@@ -41,7 +41,7 @@ Long-term facts go to Mem0. Workstation state (`/workspace/.agent-workstation`) 
 
 Durable multi-step jobs default to LangGraph. Named role crews use CrewAI. TypeScript work may use Mastra. Typed schemas use Pydantic AI.
 
-The productionize outline is hardcoded at [prompts/productionize-agent-stack.md](prompts/productionize-agent-stack.md). Follow [docs/AGENT-STACK.md](docs/AGENT-STACK.md) and [skills/agent-stack/SKILL.md](skills/agent-stack/SKILL.md). Do not add those eight tools to the 50-CLI catalog.
+The productionize outline is hardcoded at [prompts/productionize-agent-stack.md](prompts/productionize-agent-stack.md). Follow [docs/AGENT-STACK.md](docs/AGENT-STACK.md) and [skills/agent-stack/SKILL.md](skills/agent-stack/SKILL.md). Do not add those eight tools to `manifests/tools.yaml`; they belong in the agent-stack catalog.
 
 ## Mandatory safety rules
 

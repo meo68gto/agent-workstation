@@ -13,9 +13,6 @@ except ImportError:  # pragma: no cover
 from .context import log, repo_root
 
 
-EXPECTED_TOOL_COUNT = 50
-
-
 def _load_yaml(path: Path) -> dict[str, Any]:
     if yaml is None:
         raise RuntimeError("PyYAML is required")
@@ -29,14 +26,14 @@ def _load_yaml(path: Path) -> dict[str, Any]:
 def load_tools(root: Path | None = None) -> list[dict[str, Any]]:
     path = (root or repo_root()) / "manifests" / "tools.yaml"
     tools = _load_yaml(path).get("tools", [])
-    if len(tools) != EXPECTED_TOOL_COUNT:
-        raise ValueError(f"Expected exactly {EXPECTED_TOOL_COUNT} tools, found {len(tools)}")
+    if not tools:
+        raise ValueError("tools.yaml contains no tools")
     ids = [t.get("id") for t in tools]
     if len(set(ids)) != len(ids):
         raise ValueError("Duplicate tool ids in tools.yaml")
     numbers = [t.get("number") for t in tools]
-    if numbers != list(range(1, EXPECTED_TOOL_COUNT + 1)):
-        raise ValueError("Tool numbers must be unique and sequential 1–50")
+    if numbers != list(range(1, len(tools) + 1)):
+        raise ValueError("Tool numbers must be unique and sequential starting at 1")
     return tools
 
 

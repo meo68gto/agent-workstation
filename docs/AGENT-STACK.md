@@ -4,7 +4,7 @@ Hardcoded outline: [prompts/productionize-agent-stack.md](../prompts/productioni
 Machine catalog: [manifests/agent-stack.yaml](../manifests/agent-stack.yaml)  
 Bot skill: [skills/agent-stack/SKILL.md](../skills/agent-stack/SKILL.md)
 
-Audited **2026-08-16**. This stack is **not** part of the 50 CLI capabilities.
+Audited **2026-08-16**. This stack is **not** part of the primary CLI/service catalog.
 
 ## Current vs gap
 

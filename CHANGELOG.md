@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file.
 ## [0.1.0-dev] - 2026-08-16
 
 ### Added
+- LibreOffice headless (`soffice`) as primary catalog tool 51 on the `media` profile
+- Debian map: `libreoffice` → `libreoffice-nogui`
 - Hardcoded Grok Bot productionize outline (`prompts/productionize-agent-stack.md`)
 - Second catalog `manifests/agent-stack.yaml` (8 frameworks/services)
 - `agent-stack` profile, skill, docs, MCP examples, validation script
 - `uv-pip` adapter for isolated agent-stack venv
 - AGENTS.md hierarchy: Firecrawl → browser-use → Playwright → computer-use
+
+### Changed
+- Primary catalog count is no longer a hard cap; numbers stay unique and sequential from 1
 
 ## [0.1.0-dev] - 2026-08-15
 

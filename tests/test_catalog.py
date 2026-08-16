@@ -23,10 +23,11 @@ from workstation.catalog import (  # noqa: E402
 
 
 class CatalogTests(unittest.TestCase):
-    def test_exactly_fifty_sequential_tools(self) -> None:
+    def test_tools_are_sequential_from_one(self) -> None:
         tools = load_tools(ROOT)
-        self.assertEqual(len(tools), 50)
-        self.assertEqual([t["number"] for t in tools], list(range(1, 51)))
+        self.assertGreaterEqual(len(tools), 51)
+        self.assertEqual([t["number"] for t in tools], list(range(1, len(tools) + 1)))
+        self.assertIn("libreoffice", {t["id"] for t in tools})
 
     def test_core_profile_has_seventeen_required(self) -> None:
         profile = resolve_profile("core", tools=load_tools(ROOT))
@@ -44,7 +45,14 @@ class CatalogTests(unittest.TestCase):
     def test_all_profile_is_full_catalog(self) -> None:
         tools = load_tools(ROOT)
         profile = resolve_profile("all", tools=tools)
-        self.assertEqual(len(profile["required"]), 50)
+        self.assertEqual(len(profile["required"]), len(tools))
+        self.assertIn("libreoffice", profile["required"])
+
+    def test_media_requires_libreoffice(self) -> None:
+        profile = resolve_profile("media", tools=load_tools(ROOT))
+        self.assertIn("libreoffice", profile["required"])
+        self.assertIn("pandoc", profile["required"])
+        self.assertNotIn("libreoffice", resolve_profile("core", tools=load_tools(ROOT))["required"])
 
     def test_unknown_profile(self) -> None:
         with self.assertRaises(KeyError):
@@ -55,6 +63,7 @@ class CatalogTests(unittest.TestCase):
         debian = load_debian_map(ROOT)
         self.assertEqual(apt_packages_for(tools["fd"], debian), ["fd-find"])
         self.assertEqual(apt_packages_for(tools["delta"], debian), ["git-delta"])
+        self.assertEqual(apt_packages_for(tools["libreoffice"], debian), ["libreoffice-nogui"])
         self.assertEqual(path_aliases_for(tools["fd"], debian), [{"from": "fdfind", "to": "fd"}])
         self.assertEqual(path_aliases_for(tools["bat"], debian), [{"from": "batcat", "to": "bat"}])
 

@@ -17,7 +17,7 @@ description: >
 
 ## Rules
 
-- This stack is a **second catalog**. Do not add these eight tools to `manifests/tools.yaml` (the 50-CLI invariant).
+- This stack is a **second catalog**. Do not add these eight frameworks/services to `manifests/tools.yaml`.
 - Prefer self-host / local-first. Bind services to `127.0.0.1`.
 - Do not enable Langfuse or Mastra `ee/` features.
 - Do not vendor Firecrawl source into this MIT repo (AGPL-3.0).

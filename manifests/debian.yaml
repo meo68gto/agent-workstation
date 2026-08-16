@@ -29,6 +29,7 @@ apt_packages:
   tesseract: [tesseract-ocr]
   poppler: [poppler-utils]
   pandoc: [pandoc]
+  libreoffice: [libreoffice-nogui]
   age: [age]
 
 path_aliases:
