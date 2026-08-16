@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0-dev] - 2026-08-15
+
+### Added
+- Install adapters for `apt`, `official_release`, and `official_apt_repository`
+- `repair.sh` entrypoint (AGENTS.md contract)
+- Catalog `verify:` execution (exec, python, http)
+- Debian PATH aliases for `fd` and `bat`
+- `locks/sources.lock.yaml` with sha256-pinned core official releases
+- `manifests/debian.yaml` package map
+- Profile `extends` resolution
+- Unit tests and Debian 13 core-profile smoke test
+
+### Changed
+- `bootstrap.sh --profile core` now installs missing required tools, then runs doctor
+- README no longer links to documentation files that are not in the tree
+
 ## [0.1.0-dev] - 2026-08-14
 
 ### Added

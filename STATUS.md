@@ -1,28 +1,30 @@
 # Build Status — Agent Workstation
 
 **Date**: 2026-08-15
-**Latest**: doctor.sh + tools.yaml structure pushed
-**Completion label**: `implemented-not-fully-verified`
+**Latest**: install adapters + verify contracts + source lock + repair.sh
+**Completion label**: `verified` for `core` profile install+doctor on Debian 13 (Docker `debian:trixie-slim`, 17/17, `failed: 0`)
 
-## Now on GitHub
+## Now in the tree
 
-- `doctor.sh`
-- `manifests/tools.yaml` (structure + key entries including n8n as source_available)
-- Full Grok Bot platform adapter
-- Stage-zero bootstrap + doctor orchestrator
+- `bootstrap.sh --profile core` installs missing required tools, then doctors
+- `repair.sh` reuses the same ensure path
+- Doctor executes catalog `verify:` contracts (not just `which`)
+- Debian aliases: `fdfind` → `fd`, `batcat` → `bat`
+- `locks/sources.lock.yaml` pins uv, node, pnpm, yq, just, and the GitHub CLI apt repo
+- `manifests/debian.yaml` maps apt package names
+- Unit tests + `tests/smoke/core-bootstrap.sh`
 
-## What to do on the cloud computer right now
+## What to do on the cloud computer
 
 ```bash
 git pull origin main
-chmod +x doctor.sh bootstrap.sh
-./doctor.sh --profile core
+chmod +x doctor.sh bootstrap.sh repair.sh
+./bootstrap.sh --profile core
 ```
 
-The doctor path should now run. Install adapters are still missing, so bootstrap will not yet install missing packages — it will report them.
+## Remaining
 
-## Remaining for full usability
-
-- Complete the middle entries of tools.yaml (currently abbreviated in the pushed version)
-- Real install/repair adapters
-- Source lock, CI, backup/restore, n8n service
+- Adapters for `uv-tool`, `pnpm` (Playwright), and `docker-compose` (n8n)
+- Isolated backup/restore
+- Broader profile smoke (`developer`, `all`)
+- Idempotency + failure-injection CI

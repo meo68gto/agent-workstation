@@ -133,7 +133,12 @@ LOG_DIR="$STATE_ROOT/logs/runs"
 LOCK_FILE="$STATE_ROOT/locks/bootstrap.lock"
 RUN_LOG="$LOG_DIR/${RUN_ID}.log"
 
-exec > >(tee -a "$RUN_LOG") 2>&1
+if [[ $JSON -eq 1 ]]; then
+  # Keep stdout machine-readable; still persist stderr logs.
+  exec 2> >(tee -a "$RUN_LOG" >&2)
+else
+  exec > >(tee -a "$RUN_LOG") 2>&1
+fi
 
 log "INFO" "Agent Workstation stage-zero bootstrap"
 log "INFO" "Run ID: $RUN_ID"
@@ -156,7 +161,7 @@ pid=$$
 user=$TARGET_USER
 run_id=$RUN_ID
 started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-operation=bootstrap
+operation=${AGENT_WORKSTATION_OPERATION:-bootstrap}
 profile=$PROFILE
 EOF
 else
@@ -205,6 +210,7 @@ export AGENT_WORKSTATION_NO_SUDO="$NO_SUDO"
 export AGENT_WORKSTATION_JSON="$JSON"
 export AGENT_WORKSTATION_REPAIR="$REPAIR"
 export AGENT_WORKSTATION_TARGET_USER="$TARGET_USER"
+export AGENT_WORKSTATION_OPERATION="${AGENT_WORKSTATION_OPERATION:-bootstrap}"
 
 ORCHESTRATOR="$REPO_ROOT/src/workstation/cli.py"
 
@@ -215,5 +221,6 @@ if [[ ! -f "$ORCHESTRATOR" ]]; then
   exit 0
 fi
 
-log "INFO" "Handing off to Python orchestrator"
-exec python3 "$ORCHESTRATOR" "$@"
+log "INFO" "Handing off to Python orchestrator ($AGENT_WORKSTATION_OPERATION)"
+export PYTHONPATH="$REPO_ROOT/src${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m workstation
