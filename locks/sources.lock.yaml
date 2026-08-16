@@ -1,0 +1,80 @@
+# Pinned public install sources for official_release and official_apt_repository.
+# Update deliberately; bootstrap verifies sha256 before extract/install.
+schema_version: 1
+updated: 2026-08-15
+
+apt_repositories:
+  gh:
+    key_url: https://cli.github.com/packages/githubcli-archive-keyring.gpg
+    keyring_path: /etc/apt/keyrings/githubcli-archive-keyring.gpg
+    list_path: /etc/apt/sources.list.d/github-cli.list
+    source_line: "deb [arch={arch} signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main"
+    packages: [gh]
+
+tools:
+  uv:
+    version: "0.12.5"
+    artifacts:
+      linux-amd64:
+        url: https://github.com/astral-sh/uv/releases/download/0.12.5/uv-x86_64-unknown-linux-gnu.tar.gz
+        sha256: 68a509da24b06b4223a1c0175fb5eb5bc79342b76cbeff0cfe51ac3f5b17b6b2
+        strip_components: 1
+        binaries: [uv, uvx]
+      linux-arm64:
+        url: https://github.com/astral-sh/uv/releases/download/0.12.5/uv-aarch64-unknown-linux-gnu.tar.gz
+        sha256: 9bf43b4d1a07665bf64d4c4e710930b382321a785e0eb10aac07f46471f86a31
+        strip_components: 1
+        binaries: [uv, uvx]
+
+  node:
+    version: "24.19.0"
+    artifacts:
+      linux-amd64:
+        url: https://nodejs.org/dist/v24.19.0/node-v24.19.0-linux-x64.tar.xz
+        sha256: 14b342e71204f811bde6153be8e04b62aef63c236fef92b55f9c83154b409647
+        strip_components: 1
+        prefix: true
+      linux-arm64:
+        url: https://nodejs.org/dist/v24.19.0/node-v24.19.0-linux-arm64.tar.xz
+        sha256: 01443c1e1a29e531ccad5a46fefa6df490d2189c49f7955904aecdbb0fe86fdc
+        strip_components: 1
+        prefix: true
+
+  pnpm:
+    version: "11.22.0"
+    method: corepack
+    artifacts:
+      linux-amd64:
+        url: https://github.com/pnpm/pnpm/releases/download/v11.22.0/pnpm-linux-x64.tar.gz
+        sha256: 4c592fa410eb23b69691a9efb9bf21c87c15b3e9d88c6ec8acdd354a0eb8de71
+        tree: true
+        binaries: [pnpm]
+      linux-arm64:
+        url: https://github.com/pnpm/pnpm/releases/download/v11.22.0/pnpm-linux-arm64.tar.gz
+        sha256:  f1426231f365bdfd46c15fa3d1211c3936ee2c4e557afd304f6c66dbf1b2a8bf
+        tree: true
+        binaries: [pnpm]
+
+  yq:
+    version: "4.53.3"
+    artifacts:
+      linux-amd64:
+        url: https://github.com/mikefarah/yq/releases/download/v4.53.3/yq_linux_amd64
+        sha256:  fa52a4e758c63d38299163fbdd1edfb4c4963247918bf9c1c5d31d84789eded4
+        rename: yq
+      linux-arm64:
+        url: https://github.com/mikefarah/yq/releases/download/v4.53.3/yq_linux_arm64
+        sha256:  578648e463a11c1b6db6010cbf41eafed6bee79466fcffa1bb446672cf7945ea
+        rename: yq
+
+  just:
+    version: "1.58.0"
+    artifacts:
+      linux-amd64:
+        url: https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-x86_64-unknown-linux-musl.tar.gz
+        sha256:  4a5cc2f53e6f0f8c59092a6cc38291eb729d46a7dd95d3ae582008881b84931d
+        binaries: [just]
+      linux-arm64:
+        url: https://github.com/casey/just/releases/download/1.58.0/just-1.58.0-aarch64-unknown-linux-musl.tar.gz
+        sha256:  748237128c4c40cbdabc65e841d05ceba13cc23a91eaba395495894c1d9764df
+        binaries: [just]

@@ -62,12 +62,13 @@ For the full catalog (50 primary capabilities):
 
 - **Stage-zero** pure Bash entrypoint → Python orchestrator
 - Canonical `manifests/tools.yaml` (exactly 50 primary capabilities)
-- Immutable source lock (`locks/sources.lock.yaml`)
-- Idempotent, non-destructive, resumable, evidence-gated
-- XDG-aware persistent state with explicit classifications
-- Diagnostic-code driven repair (bounded)
-- Standard + sensitive backup sets with isolated restore testing
-- Full CI matrix (schema, unit, Debian smoke, idempotency, failure-injection)
+- Debian package map (`manifests/debian.yaml`) plus PATH aliases (`fdfind`→`fd`, `batcat`→`bat`)
+- Pinned source lock (`locks/sources.lock.yaml`) for official releases
+- Install adapters: `apt`, `official_release`, `official_apt_repository`
+- Doctor runs catalog `verify:` contracts (exec / python / http)
+- Idempotent, non-destructive, resumable
+- XDG-aware persistent state; `/workspace` preferred on Grok Bot
+- Unit tests + Debian 13 core-profile smoke in CI
 
 ## AI Agent instruction
 
@@ -80,20 +81,18 @@ verify the required capabilities, and then continue my original task.
 ## Documentation
 
 - [AGENTS.md](AGENTS.md) — operating contract for agents
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- [docs/RECOVERY.md](docs/RECOVERY.md)
-- [docs/TOOL-CATALOG.md](docs/TOOL-CATALOG.md)
-- [docs/SECURITY-MODEL.md](docs/SECURITY-MODEL.md)
-- [docs/THREAT-MODEL.md](docs/THREAT-MODEL.md)
+- [platforms/grok-cloud/README.md](platforms/grok-cloud/README.md) — Grok Bot adapter
+- [platforms/grok-cloud/recovery.md](platforms/grok-cloud/recovery.md) — rebuild recovery
+- [STATUS.md](STATUS.md) — current completion label
 
 ## License
 
 MIT (see [LICENSE](LICENSE)).  
-Third-party tools retain their own licenses (see [docs/LICENSE-AUDIT.md](docs/LICENSE-AUDIT.md)).  
+Third-party tools retain their own licenses.  
 n8n is classified as **source-available** (Sustainable Use License / fair-code), not OSI open-source.
 
 ---
 
 **Status**: Active development toward v0.1.0  
 **Primary target**: Debian 13 (Trixie) amd64  
-**Completion goal**: Evidence-gated `verified` on clean host for core + all profiles.
+**Current scope**: `core` profile install + doctor is implemented. Backup/restore, n8n service, and remaining strategy adapters (`uv-tool`, `pnpm`, `docker-compose`) are not.

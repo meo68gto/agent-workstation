@@ -1,0 +1,38 @@
+# Debian 13 (Trixie) package names and PATH aliases.
+# tools.yaml remains the capability SSOT; this file maps capabilities onto apt.
+schema_version: 1
+
+apt_packages:
+  python: [python3]
+  git: [git]
+  git-lfs: [git-lfs]
+  shellcheck: [shellcheck]
+  ripgrep: [ripgrep]
+  fd: [fd-find]
+  bat: [bat]
+  fzf: [fzf]
+  jq: [jq]
+  httpie: [httpie]
+  aria2: [aria2]
+  tmux: [tmux]
+  btop: [btop]
+  delta: [git-delta]
+  direnv: [direnv]
+  parallel: [parallel]
+  rsync: [rsync]
+  ncdu: [ncdu]
+  sqlite: [sqlite3]
+  miller: [miller]
+  restic: [restic]
+  ffmpeg: [ffmpeg]
+  imagemagick: [imagemagick]
+  tesseract: [tesseract-ocr]
+  poppler: [poppler-utils]
+  pandoc: [pandoc]
+  age: [age]
+
+path_aliases:
+  fd:
+    - {from: fdfind, to: fd}
+  bat:
+    - {from: batcat, to: bat}
